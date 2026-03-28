@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Efficiency Gap: Shopkeeper Workflow Risks</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;family=Roboto+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { margin: 0; padding: 0; background-color: #f3f4f6; }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Flow Path Animations and Styling */
+        .flow-path {
+            position: absolute;
+            top: 340px;
+            left: 100px;
+            width: 1080px;
+            height: 4px;
+            background: #e5e7eb;
+            z-index: 0;
+        }
+        
+        .flow-node {
+            position: absolute;
+            top: 290px;
+            width: 160px;
+            height: 100px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-bubble {
+            position: absolute;
+            background-color: #fff7ed;
+            border: 2px solid #f97316;
+            color: #c2410c;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 200px;
+            text-align: center;
+            z-index: 20;
+            box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.2);
+        }
+        
+        .risk-bubble::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #fff7ed;
+            border-bottom: 2px solid #f97316;
+            border-right: 2px solid #f97316;
+            transform: rotate(45deg);
+        }
+
+        .risk-top::after { bottom: -8px; left: 50%; transform: translateX(-50%) rotate(45deg); }
+        .risk-bottom::after { top: -8px; left: 50%; transform: translateX(-50%) rotate(225deg); }
+
+        .connection-line {
+            position: absolute;
+            background-color: #f97316;
+            width: 2px;
+            z-index: 5;
+        }
+        
+        .icon-lg { font-size: 2rem; margin-bottom: 8px; }
+        
+        .step-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .inefficiency-zone {
+            background-color: rgba(255, 237, 213, 0.3);
+            border: 2px dashed #fdba74;
+            position: absolute;
+            border-radius: 16px;
+            z-index: 1;
+        }
+        
+        .arrow-icon {
+            position: absolute;
+            top: 330px;
+            color: #d1d5db;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<div class="px-12 py-8 flex justify-between items-start border-b border-gray-100 bg-white z-30">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 text-xl">
+<i class="fa-solid fa-stopwatch"></i>
+</div>
+<h1 class="text-3xl font-bold text-gray-900 tracking-tight">The Efficiency Gap: Manual Workflow</h1>
+</div>
+<p class="text-gray-500 text-lg ml-1">Operational bottlenecks causing revenue leakage and delays</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Slide 03</p>
+<p class="text-xs text-gray-300 mt-1">Problem Statement</p>
+</div>
+</div>
+<!-- Main Content -->
+<div class="flex-1 relative w-full h-full bg-gray-50">
+<!-- Inefficiency Zone Background -->
+<div class="inefficiency-zone" style="top: 180px; left: 330px; width: 520px; height: 350px;">
+<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-orange-50 px-3 py-1 text-xs font-bold text-orange-600 border border-orange-200 rounded-full">
+                    MANUAL BOTTLENECK
+                </div>
+</div>
+<!-- Flow Path Line -->
+<div class="flow-path"></div>
+<!-- Step 1: Receive -->
+<div class="flow-node" style="left: 100px; border-color: #3b82f6;">
+<i class="fa-solid fa-file-import icon-lg text-blue-500"></i>
+<p class="font-bold text-gray-800">Inbound</p>
+<p class="step-label">Receive Files</p>
+</div>
+<!-- Step 2: Download & Open -->
+<div class="flow-node" style="left: 350px; border-color: #f59e0b;">
+<i class="fa-solid fa-download icon-lg text-orange-500"></i>
+<p class="font-bold text-gray-800">Manual Prep</p>
+<p class="step-label">Save &amp; Open</p>
+</div>
+<!-- Step 3: Print Settings -->
+<div class="flow-node" style="left: 600px; border-color: #f59e0b;">
+<i class="fa-solid fa-sliders icon-lg text-orange-500"></i>
+<p class="font-bold text-gray-800">Configuration</p>
+<p class="step-label">Select Settings</p>
+</div>
+<!-- Step 4: Count & Bill -->
+<div class="flow-node" style="left: 850px; border-color: #ef4444; background-color: #fff7ed;">
+<i class="fa-solid fa-calculator icon-lg text-red-500"></i>
+<p class="font-bold text-gray-800">Billing</p>
+<p class="step-label">Manual Count</p>
+</div>
+<!-- Step 5: Payment -->
+<div class="flow-node" style="left: 1100px; border-color: #6b7280;">
+<i class="fa-solid fa-hand-holding-dollar icon-lg text-gray-600"></i>
+<p class="font-bold text-gray-800">Collection</p>
+<p class="step-label">Cash Payment</p>
+</div>
+<!-- Arrows between nodes -->
+<i class="fa-solid fa-arrow-right arrow-icon" style="left: 290px;"></i>
+<i class="fa-solid fa-arrow-right arrow-icon" style="left: 540px;"></i>
+<i class="fa-solid fa-arrow-right arrow-icon" style="left: 790px;"></i>
+<i class="fa-solid fa-arrow-right arrow-icon" style="left: 1040px;"></i>
+<!-- Risk Bubbles (Top) -->
+<div class="risk-bubble risk-top" style="top: 140px; left: 330px;">
+<div class="flex items-center justify-center gap-2 mb-1">
+<i class="fa-solid fa-hourglass-start"></i>
+<span class="uppercase text-xs">Time Waste</span>
+</div>
+<p class="text-xs font-normal text-orange-900">3-4 mins per customer handling files manually</p>
+</div>
+<div class="connection-line" style="height: 50px; top: 240px; left: 430px;"></div>
+<div class="w-2 h-2 rounded-full bg-orange-500 absolute" style="top: 288px; left: 427px;"></div>
+<div class="risk-bubble risk-top" style="top: 140px; left: 830px;">
+<div class="flex items-center justify-center gap-2 mb-1">
+<i class="fa-solid fa-file-invoice-dollar"></i>
+<span class="uppercase text-xs">Revenue Leakage</span>
+</div>
+<p class="text-xs font-normal text-orange-900">Errors in counting pages (e.g., Duplex vs Simplex)</p>
+</div>
+<div class="connection-line" style="height: 50px; top: 240px; left: 930px;"></div>
+<div class="w-2 h-2 rounded-full bg-orange-500 absolute" style="top: 288px; left: 927px;"></div>
+<!-- Risk Bubbles (Bottom) -->
+<div class="risk-bubble risk-bottom" style="top: 480px; left: 580px;">
+<div class="flex items-center justify-center gap-2 mb-1">
+<i class="fa-solid fa-users-slash"></i>
+<span class="uppercase text-xs">Queue Chaos</span>
+</div>
+<p class="text-xs font-normal text-orange-900">Long wait times during exam seasons cause churn</p>
+</div>
+<div class="connection-line" style="height: 50px; top: 430px; left: 680px;"></div>
+<div class="w-2 h-2 rounded-full bg-orange-500 absolute" style="top: 428px; left: 677px;"></div>
+<!-- Legend/Key -->
+<div class="absolute bottom-8 left-12 flex gap-6 bg-white px-6 py-3 rounded-full border border-gray-200 shadow-sm">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-orange-500"></div>
+<p class="text-xs font-semibold text-gray-600">Efficiency Loss</p>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 border-2 border-dashed border-orange-300 bg-orange-50"></div>
+<p class="text-xs font-semibold text-gray-600">Manual Work Zone</p>
+</div>
+</div>
+<!-- Statistic Highlight -->
+<div class="absolute bottom-8 right-12 bg-white px-6 py-4 rounded-xl border-l-4 border-orange-500 shadow-md">
+<p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Business Impact</p>
+<div class="flex items-baseline gap-2">
+<p class="text-2xl font-bold text-gray-800">40%</p>
+<p class="text-sm text-gray-600">slower turnaround time vs automated</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

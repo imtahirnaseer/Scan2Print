@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Summary &amp; Conclusion</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', sans-serif; overflow: hidden; }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(#e5e7eb 1px, transparent 1px),
+                radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        /* Main Layout */
+        .content-wrapper {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 40px;
+            padding: 40px 60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Left Column: Benefits Grid */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            align-content: center;
+        }
+
+        .benefit-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 16px;
+        }
+
+        .card-metric {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #111827;
+            line-height: 1;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        /* Specific Card Styles */
+        .card-privacy .card-icon { background-color: #eff6ff; color: #2563eb; }
+        .card-privacy { border-bottom: 4px solid #2563eb; }
+
+        .card-speed .card-icon { background-color: #ecfdf5; color: #059669; }
+        .card-speed { border-bottom: 4px solid #059669; }
+
+        .card-compliance .card-icon { background-color: #f5f3ff; color: #7c3aed; }
+        .card-compliance { border-bottom: 4px solid #7c3aed; }
+
+        .card-revenue .card-icon { background-color: #fff7ed; color: #ea580c; }
+        .card-revenue { border-bottom: 4px solid #ea580c; }
+
+        /* Right Column: Call to Action */
+        .cta-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            text-align: center;
+        }
+
+        .logo-area {
+            width: 80px;
+            height: 80px;
+            background: #111827;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            margin: 0 auto 24px auto;
+        }
+
+        .final-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .final-subtitle {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .contact-box {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .contact-icon {
+            color: #2563eb;
+        }
+
+        /* Decorative blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 1;
+            opacity: 0.4;
+        }
+        .blob-1 { width: 300px; height: 300px; background: #bfdbfe; top: -100px; right: -100px; }
+        .blob-2 { width: 200px; height: 200px; background: #ddd6fe; bottom: -50px; left: -50px; }
+
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Decorative Background -->
+<div class="bg-pattern"></div>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<!-- Header -->
+<div class="px-12 py-6 flex justify-between items-start z-30 relative">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center text-white text-xl">
+<i class="fa-solid fa-flag-checkered"></i>
+</div>
+<h1 class="text-3xl font-bold text-gray-900 tracking-tight">Summary &amp; Conclusion</h1>
+</div>
+<p class="text-gray-500 text-sm ml-1">Transforming the document economy into a secure, digital-first ecosystem</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Slide 17</p>
+<p class="text-xs text-gray-300 mt-1">Final Overview</p>
+</div>
+</div>
+<!-- Main Content -->
+<div class="content-wrapper">
+<!-- Left Column: Benefits -->
+<div class="benefits-grid">
+<!-- Benefit 1: Privacy -->
+<div class="benefit-card card-privacy">
+<div class="card-icon">
+<i class="fa-solid fa-user-shield"></i>
+</div>
+<p class="card-metric">100%</p>
+<p class="card-title">Privacy First</p>
+<p class="card-desc">Zero-Trace architecture ensures user data is encrypted in transit and permanently purged from RAM after printing.</p>
+</div>
+<!-- Benefit 2: Speed -->
+<div class="benefit-card card-speed">
+<div class="card-icon">
+<i class="fa-solid fa-stopwatch"></i>
+</div>
+<p class="card-metric">40%</p>
+<p class="card-title">Faster Operations</p>
+<p class="card-desc">Eliminates manual file opening, page counting, and setting adjustments. Automated queue management reduces wait times.</p>
+</div>
+<!-- Benefit 3: Compliance -->
+<div class="benefit-card card-compliance">
+<div class="card-icon">
+<i class="fa-solid fa-scale-balanced"></i>
+</div>
+<p class="card-metric">DPDP</p>
+<p class="card-title">Act Compliant</p>
+<p class="card-desc">Built-in data minimization and storage limitation adherence protects shopkeepers from legal liability under the 2023 Act.</p>
+</div>
+<!-- Benefit 4: Revenue -->
+<div class="benefit-card card-revenue">
+<div class="card-icon">
+<i class="fa-solid fa-chart-line"></i>
+</div>
+<p class="card-metric">2x</p>
+<p class="card-title">Revenue Uplift</p>
+<p class="card-desc">Plug revenue leakage from billing errors and monetize premium express printing services via UPI integration.</p>
+</div>
+</div>
+<!-- Right Column: Closing CTA -->
+<div class="cta-column">
+<div class="logo-area">
+<i class="fa-solid fa-print"></i>
+</div>
+<h2 class="final-title">Scan2Print</h2>
+<p class="final-subtitle">
+                Ready to modernize the printing industry? Let's build the trust layer for India's digital document economy.
+            </p>
+<div class="contact-box">
+<div class="contact-item">
+<i class="fa-solid fa-envelope contact-icon"></i>
+<p>partners@scan2print.in</p>
+</div>
+<div class="contact-item">
+<i class="fa-solid fa-globe contact-icon"></i>
+<p>www.scan2print.in</p>
+</div>
+<div class="contact-item">
+<i class="fa-brands fa-linkedin contact-icon"></i>
+<p>linkedin.com/company/scan2print</p>
+</div>
+</div>
+<div class="mt-8">
+<p class="text-xs text-gray-400 font-mono">© 2026 Scan2Print Ecosystem. All Rights Reserved.</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

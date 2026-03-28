@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Journey: Scan-to-Print Flow</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;family=Roboto+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', sans-serif; }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Lane Styling */
+        .lane-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .lane {
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding-left: 200px; /* Space for label */
+            padding-right: 40px;
+        }
+
+        .lane:last-child {
+            border-bottom: none;
+        }
+
+        .lane-label {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            z-index: 20;
+        }
+
+        .lane-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .lane-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Process Nodes */
+        .process-node {
+            width: 150px;
+            height: 100px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 30;
+            padding: 10px;
+            transition: transform 0.2s;
+        }
+
+        .node-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .node-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+            color: #1f2937;
+        }
+
+        .node-subtext {
+            font-size: 0.6rem;
+            color: #6b7280;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        /* Specific Lane Styles */
+        .lane-user { background-color: rgba(59, 130, 246, 0.02); }
+        .lane-system { background-color: rgba(99, 102, 241, 0.02); }
+        .lane-shop { background-color: rgba(16, 185, 129, 0.02); }
+
+        .label-user .lane-icon { background-color: #3b82f6; }
+        .label-system .lane-icon { background-color: #6366f1; }
+        .label-shop .lane-icon { background-color: #10b981; }
+
+        .node-user { border-color: #93c5fd; background: #eff6ff; }
+        .node-user .node-icon { color: #2563eb; }
+        
+        .node-system { border-color: #c7d2fe; background: #eef2ff; }
+        .node-system .node-icon { color: #4f46e5; }
+        
+        .node-shop { border-color: #6ee7b7; background: #ecfdf5; }
+        .node-shop .node-icon { color: #059669; }
+
+        /* Connectors SVG */
+        .connector-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .connector-line {
+            stroke: #9ca3af;
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 4;
+            animation: dash 30s linear infinite;
+        }
+
+        .connector-solid {
+            stroke: #6b7280;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+
+        /* Interaction Elements */
+        .encryption-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #f59e0b;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .security-lock {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            padding: 8px 16px;
+            border-radius: 99px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<div class="px-12 py-6 flex justify-between items-start border-b border-gray-100 bg-white z-40 shadow-sm">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xl">
+<i class="fa-solid fa-route"></i>
+</div>
+<h1 class="text-3xl font-bold text-gray-900 tracking-tight">User Journey: Scan-to-Print</h1>
+</div>
+<p class="text-gray-500 text-sm ml-1">End-to-end transaction flow illustrating the "Zero Friction, Zero Trust" interaction model</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Slide 07</p>
+<p class="text-xs text-gray-300 mt-1">Workflow Diagram</p>
+</div>
+</div>
+<!-- Swimlane Container -->
+<div class="lane-container">
+<!-- SVG Layer for Connectors -->
+<svg class="connector-svg">
+<defs>
+<marker id="arrow" markerheight="10" markerunits="strokeWidth" markerwidth="10" orient="auto" refx="9" refy="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#6b7280"></path>
+</marker>
+<marker id="arrow-dashed" markerheight="10" markerunits="strokeWidth" markerwidth="10" orient="auto" refx="9" refy="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#9ca3af"></path>
+</marker>
+</defs>
+<!-- Flow Paths -->
+<!-- 1. Scan -> Create Session -->
+<path class="connector-solid" d="M 330 90 L 330 250" marker-end="url(#arrow)"></path>
+<!-- 2. Create Session -> Upload -->
+<path class="connector-solid" d="M 380 300 L 510 300 L 510 140" marker-end="url(#arrow)"></path>
+<!-- 3. Upload -> Validate -->
+<path class="connector-solid" d="M 585 90 L 585 250" marker-end="url(#arrow)"></path>
+<!-- 4. Validate -> Pay Request -->
+<path class="connector-solid" d="M 660 300 L 750 300 L 750 140" marker-end="url(#arrow)"></path>
+<!-- 5. Pay -> Verify -->
+<path class="connector-solid" d="M 825 90 L 825 250" marker-end="url(#arrow)"></path>
+<!-- 6. Verify -> Execute -->
+<path class="connector-solid" d="M 825 350 L 825 450" marker-end="url(#arrow)"></path>
+<!-- 7. Execute -> Purge -->
+<path class="connector-solid" d="M 900 500 L 1050 500" marker-end="url(#arrow)"></path>
+<!-- Purge Feedback to Cloud -->
+<path class="connector-line" d="M 1125 450 L 1125 350" marker-end="url(#arrow-dashed)"></path>
+</svg>
+<!-- Lane 1: User -->
+<div class="lane lane-user">
+<div class="lane-label label-user">
+<div class="lane-icon"><i class="fa-solid fa-user"></i></div>
+<p class="lane-title">User</p>
+<p class="text-xs text-gray-400 mt-1">Mobile Browser</p>
+</div>
+<!-- Node 1: Scan -->
+<div class="process-node node-user" style="left: 250px;">
+<i class="fa-solid fa-qrcode node-icon"></i>
+<p class="node-text">Scan QR Code</p>
+<p class="node-subtext">No App Install</p>
+</div>
+<!-- Node 2: Upload -->
+<div class="process-node node-user" style="left: 510px;">
+<div class="encryption-badge"><i class="fa-solid fa-lock"></i> AES-256</div>
+<i class="fa-solid fa-cloud-arrow-up node-icon"></i>
+<p class="node-text">Select &amp; Upload</p>
+<p class="node-subtext">Client-Side Encrypt</p>
+</div>
+<!-- Node 3: Pay -->
+<div class="process-node node-user" style="left: 750px;">
+<i class="fa-brands fa-google-pay node-icon"></i>
+<p class="node-text">UPI Payment</p>
+<p class="node-subtext">1-Click Pay</p>
+</div>
+</div>
+<!-- Lane 2: System -->
+<div class="lane lane-system">
+<div class="lane-label label-system">
+<div class="lane-icon"><i class="fa-solid fa-server"></i></div>
+<p class="lane-title">Cloud System</p>
+<p class="text-xs text-gray-400 mt-1">Backend / Redis</p>
+</div>
+<!-- Node 4: Session -->
+<div class="process-node node-system" style="left: 250px;">
+<i class="fa-solid fa-link node-icon"></i>
+<p class="node-text">Create Session</p>
+<p class="node-subtext">Temporary Token</p>
+</div>
+<!-- Node 5: Validate -->
+<div class="process-node node-system" style="left: 510px;">
+<i class="fa-solid fa-file-invoice node-icon"></i>
+<p class="node-text">Validate &amp; Price</p>
+<p class="node-subtext">Count Pages</p>
+</div>
+<!-- Node 6: Verify Payment -->
+<div class="process-node node-system" style="left: 750px;">
+<i class="fa-solid fa-check-double node-icon"></i>
+<p class="node-text">Verify Transaction</p>
+<p class="node-subtext">Gateway Confirm</p>
+</div>
+<!-- Node 7: Purge Confirm -->
+<div class="process-node node-system" style="left: 1050px; border-style: dashed;">
+<i class="fa-solid fa-trash-can node-icon text-gray-400"></i>
+<p class="node-text text-gray-500">Close Session</p>
+<p class="node-subtext">Clear Redis</p>
+</div>
+</div>
+<!-- Lane 3: Shop PC -->
+<div class="lane lane-shop">
+<div class="lane-label label-shop">
+<div class="lane-icon"><i class="fa-solid fa-desktop"></i></div>
+<p class="lane-title">Shop PC</p>
+<p class="text-xs text-gray-400 mt-1">Print Agent</p>
+</div>
+<!-- Node 8: Print -->
+<div class="process-node node-shop" style="left: 750px;">
+<i class="fa-solid fa-print node-icon"></i>
+<p class="node-text">Silent Print</p>
+<p class="node-subtext">Auto-Execution</p>
+</div>
+<!-- Node 9: Wipe -->
+<div class="process-node node-shop" style="left: 1050px;">
+<i class="fa-solid fa-eraser node-icon"></i>
+<p class="node-text">Secure Wipe</p>
+<p class="node-subtext">File Deletion</p>
+</div>
+</div>
+<!-- Legend / Info -->
+<div class="security-lock">
+<i class="fa-solid fa-shield-cat text-green-600"></i>
+<div>
+<p class="text-xs font-bold text-gray-700">Zero-Trace Protocol Active</p>
+<p class="text-[10px] text-gray-400">Files exist only during transaction</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

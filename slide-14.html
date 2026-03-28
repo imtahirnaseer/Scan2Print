@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Database &amp; Storage Structure</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;family=Roboto+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', sans-serif; }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Swimlane Layout */
+        .swimlane-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 0 40px 20px 40px;
+        }
+
+        /* Headers */
+        .timeline-header {
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr 1fr 1fr;
+            gap: 20px;
+            padding: 10px 0;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .stage-label {
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #6b7280;
+            background: #f9fafb;
+            padding: 8px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        /* Lanes */
+        .lane-row {
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr 1fr 1fr;
+            gap: 20px;
+            min-height: 200px;
+            position: relative;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .lane-redis {
+            background-color: #fff1f2; /* Rose 50 */
+            border: 1px solid #fda4af;
+        }
+
+        .lane-firestore {
+            background-color: #fff7ed; /* Orange 50 */
+            border: 1px solid #fdba74;
+        }
+
+        .lane-title {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-right: 20px;
+            border-right: 2px dashed rgba(0,0,0,0.1);
+        }
+
+        .tech-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .tech-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .tech-role {
+            font-size: 0.75rem;
+            color: #4b5563;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Data Objects */
+        .data-object {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 10;
+            height: 140px;
+            transition: transform 0.2s;
+        }
+        
+        .data-object:hover {
+            transform: translateY(-2px);
+        }
+
+        .lane-redis .data-object { border-top: 4px solid #f43f5e; }
+        .lane-firestore .data-object { border-top: 4px solid #f97316; }
+
+        .obj-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .obj-title {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #374151;
+        }
+
+        .obj-content {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.65rem;
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 6px;
+            border-radius: 4px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .obj-meta {
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tag {
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .tag-ttl { background: #fee2e2; color: #991b1b; }
+        .tag-perm { background: #ffedd5; color: #9a3412; }
+        .tag-idx { background: #e0f2fe; color: #075985; }
+
+        /* Connectors */
+        .connector-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Purged State Styling */
+        .purged-state {
+            border: 2px dashed #d1d5db !important;
+            background: rgba(255,255,255,0.5);
+            opacity: 0.7;
+        }
+        
+        .purged-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: #ef4444;
+            opacity: 0.2;
+        }
+
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<div class="px-12 py-6 flex justify-between items-start border-b border-gray-100 bg-white z-30">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-xl">
+<i class="fa-solid fa-database"></i>
+</div>
+<h1 class="text-3xl font-bold text-gray-900 tracking-tight">Database &amp; Storage Lifecycle</h1>
+</div>
+<p class="text-gray-500 text-sm ml-1">Data persistence strategy enforcing privacy through segregated storage layers</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Slide 14</p>
+<p class="text-xs text-gray-300 mt-1">Data Lifecycle</p>
+</div>
+</div>
+<!-- Main Content -->
+<div class="swimlane-container bg-gray-50">
+<!-- Timeline Header -->
+<div class="timeline-header">
+<div></div> <!-- Spacer for Label Column -->
+<div class="stage-label"><i class="fa-solid fa-cloud-upload-alt mr-2"></i>1. Create &amp; Upload</div>
+<div class="stage-label"><i class="fa-solid fa-cog mr-2"></i>2. Active / Processing</div>
+<div class="stage-label"><i class="fa-solid fa-print mr-2"></i>3. Printed / Executed</div>
+<div class="stage-label"><i class="fa-solid fa-trash-alt mr-2"></i>4. Purged / Archived</div>
+</div>
+<!-- SVG Connectors Layer -->
+<svg class="connector-svg">
+<defs>
+<marker id="arrow-red" markerheight="10" markerunits="strokeWidth" markerwidth="10" orient="auto" refx="9" refy="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#f43f5e"></path>
+</marker>
+<marker id="arrow-orange" markerheight="10" markerunits="strokeWidth" markerwidth="10" orient="auto" refx="9" refy="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#f97316"></path>
+</marker>
+</defs>
+<!-- Redis Flow -->
+<path d="M 460 160 L 520 160" marker-end="url(#arrow-red)" stroke="#f43f5e" stroke-dasharray="5,5" stroke-width="2"></path>
+<path d="M 720 160 L 780 160" marker-end="url(#arrow-red)" stroke="#f43f5e" stroke-width="2"></path>
+<path d="M 980 160 L 1040 160" marker-end="url(#arrow-red)" stroke="#f43f5e" stroke-width="2"></path>
+<!-- Firestore Flow -->
+<path d="M 460 380 L 520 380" marker-end="url(#arrow-orange)" stroke="#f97316" stroke-width="2"></path>
+<path d="M 720 380 L 780 380" marker-end="url(#arrow-orange)" stroke="#f97316" stroke-width="2"></path>
+<path d="M 980 380 L 1040 380" marker-end="url(#arrow-orange)" stroke="#f97316" stroke-width="2"></path>
+<!-- Cross Interactions -->
+<path d="M 360 230 L 360 300" stroke="#cbd5e1" stroke-dasharray="4" stroke-width="2"></path>
+</svg>
+<!-- Lane 1: Redis (Volatile) -->
+<div class="lane-row lane-redis">
+<div class="lane-title">
+<i class="fa-solid fa-bolt tech-icon text-red-500"></i>
+<span class="tech-name">Redis</span>
+<span class="tech-role">Volatile Cache (RAM)</span>
+<span class="text-xs text-red-600 mt-2 font-semibold bg-red-100 px-2 py-1 rounded w-max">Zero-Disk Policy</span>
+</div>
+<!-- Create Stage -->
+<div class="data-object">
+<div class="obj-header">
+<span class="obj-title">File Chunks</span>
+<i class="fa-solid fa-file-code text-red-400"></i>
+</div>
+<div class="obj-content">
+                    KEY: sess_9a7b...<br/>
+                    VAL: [Blob Chunk 1, Chunk 2...]<br/>
+                    TYPE: Binary Stream
+                </div>
+<div class="obj-meta">
+<span class="tag tag-ttl"><i class="fa-regular fa-clock mr-1"></i>TTL: 15m</span>
+</div>
+</div>
+<!-- Active Stage -->
+<div class="data-object">
+<div class="obj-header">
+<span class="obj-title">Session Meta</span>
+<i class="fa-solid fa-list-check text-red-400"></i>
+</div>
+<div class="obj-content">
+                    {<br/>
+                      "pg_count": 4,<br/>
+                      "color": false,<br/>
+                      "shop_id": "NDL01"<br/>
+                    }
+                </div>
+<div class="obj-meta">
+<span class="tag tag-ttl"><i class="fa-regular fa-clock mr-1"></i>TTL: 15m</span>
+</div>
+</div>
+<!-- Printed Stage -->
+<div class="data-object">
+<div class="obj-header">
+<span class="obj-title">Job Dispatch</span>
+<i class="fa-solid fa-paper-plane text-red-400"></i>
+</div>
+<div class="obj-content">
+                    STREAM -&gt; Agent<br/>
+                    Decrypt in RAM<br/>
+                    Status: "SPOOLING"
+                </div>
+<div class="obj-meta">
+<span class="tag tag-ttl"><i class="fa-regular fa-clock mr-1"></i>TTL: 2m</span>
+</div>
+</div>
+<!-- Purged Stage -->
+<div class="data-object purged-state">
+<div class="obj-header">
+<span class="obj-title text-gray-400">Key Deleted</span>
+<i class="fa-solid fa-ban text-gray-300"></i>
+</div>
+<div class="obj-content bg-gray-100 text-gray-400">
+                    NULL<br/>
+                    (Data overwritten)
+                </div>
+<div class="purged-icon">
+<i class="fa-solid fa-eraser"></i>
+</div>
+</div>
+</div>
+<!-- Lane 2: Firestore (Permanent) -->
+<div class="lane-row lane-firestore">
+<div class="lane-title">
+<i class="fa-solid fa-database tech-icon text-orange-500"></i>
+<span class="tech-name">Firestore</span>
+<span class="tech-role">NoSQL Database</span>
+<span class="text-xs text-orange-600 mt-2 font-semibold bg-orange-100 px-2 py-1 rounded w-max">Audit Logging</span>
+</div>
+<!-- Create Stage -->
+<div class="data-object">
+<div class="obj-header">
+<span class="obj-title">Txn Record</span>
+<i class="fa-solid fa-file-invoice text-orange-400"></i>
+</div>
+<div class="obj-content">
+                    Coll: transactions<br/>
+                    ID: txn_8821...<br/>
+                    Status: "INIT"
+                </div>
+<div class="obj-meta">
+<span class="tag tag-perm">Retain: 3y</span>
+</div>
+</div>
+<!-- Active Stage -->
+<div class="data-object">
+<div class="obj-header">
+<span class="obj-title">Payment Log</span>
+<i class="fa-solid fa-indian-rupee-sign text-orange-400"></i>
+</div>
+<div class="obj-content">
+                    Update: txn_8821<br/>
+                    PayStatus: "SUCCESS"<br/>
+                    Amount: ₹10.00
+                </div>
+<div class="obj-meta">
+<span class="tag tag-idx">Idx: shop_id</span>
+</div>
+</div>
+<!-- Printed Stage -->
+<div class="data-object">
+<div class="obj-header">
+<span class="obj-title">Status Update</span>
+<i class="fa-solid fa-check-circle text-orange-400"></i>
+</div>
+<div class="obj-content">
+                    Update: txn_8821<br/>
+                    Status: "PRINTED"<br/>
+                    Time: 14:05:22
+                </div>
+<div class="obj-meta">
+<span class="tag tag-idx">Idx: date</span>
+</div>
+</div>
+<!-- Purged Stage -->
+<div class="data-object">
+<div class="obj-header">
+<span class="obj-title">Archive Log</span>
+<i class="fa-solid fa-box-archive text-orange-400"></i>
+</div>
+<div class="obj-content">
+                    Final State: "CLOSED"<br/>
+                    File Hash: [Removed]<br/>
+                    Audit Trail Sealed
+                </div>
+<div class="obj-meta">
+<span class="tag tag-perm">Cold Storage</span>
+</div>
+</div>
+</div>
+<!-- Legend / Policy Footer -->
+<div class="grid grid-cols-2 gap-6 mt-2">
+<div class="bg-white border border-gray-200 rounded-lg p-3 flex items-start gap-3 shadow-sm">
+<i class="fa-solid fa-triangle-exclamation text-red-500 mt-1"></i>
+<div>
+<p class="text-xs font-bold text-gray-800 uppercase">Retention Policy (Redis)</p>
+<p class="text-xs text-gray-500 leading-tight">Strict TTL enforcement. Any file not printed within 15 minutes is automatically expunged from memory. No recovery possible.</p>
+</div>
+</div>
+<div class="bg-white border border-gray-200 rounded-lg p-3 flex items-start gap-3 shadow-sm">
+<i class="fa-solid fa-magnifying-glass-chart text-orange-500 mt-1"></i>
+<div>
+<p class="text-xs font-bold text-gray-800 uppercase">Indexing Strategy (Firestore)</p>
+<p class="text-xs text-gray-500 leading-tight">Compound indexes on <span class="font-mono bg-gray-100 px-1 rounded">shop_id + timestamp</span> for fast analytics dashboards. No PII (Personally Identifiable Information) stored in permanent logs.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

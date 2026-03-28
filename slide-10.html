@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Security Architecture: Zero-Trace</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;family=Roboto+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', sans-serif; }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Shield Container */
+        .shield-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        /* Layer Styles */
+        .security-layer {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            border-radius: 50% 50% 50% 50% / 15% 15% 0% 0%; /* Slight curve for depth */
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Specific Layers - Stacked pyramid style */
+        .layer-1 { /* Outer - Client */
+            width: 900px;
+            height: 450px;
+            background-color: #e0f2fe; /* Light Blue */
+            border-top: 6px solid #3b82f6;
+            z-index: 10;
+            top: 100px;
+            clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%);
+            padding-top: 20px;
+        }
+
+        .layer-2 { /* Transport */
+            width: 740px;
+            height: 360px;
+            background-color: #dbeafe; /* Blue */
+            border-top: 6px solid #2563eb;
+            z-index: 20;
+            top: 170px;
+            clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
+            padding-top: 20px;
+        }
+
+        .layer-3 { /* Access */
+            width: 580px;
+            height: 270px;
+            background-color: #c7d2fe; /* Indigo Light */
+            border-top: 6px solid #6366f1;
+            z-index: 30;
+            top: 240px;
+            clip-path: polygon(0 0, 100% 0, 78% 100%, 22% 100%);
+            padding-top: 20px;
+        }
+
+        .layer-4 { /* Data */
+            width: 420px;
+            height: 180px;
+            background-color: #a5b4fc; /* Indigo */
+            border-top: 6px solid #4f46e5;
+            z-index: 40;
+            top: 310px;
+            clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%);
+            padding-top: 20px;
+        }
+
+        .layer-5 { /* Core Core */
+            width: 260px;
+            height: 90px;
+            background-color: #818cf8; /* Deep Indigo */
+            border-top: 6px solid #4338ca;
+            z-index: 50;
+            top: 380px;
+            clip-path: polygon(0 0, 100% 0, 60% 100%, 40% 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 0;
+            box-shadow: 0 0 20px rgba(67, 56, 202, 0.4);
+        }
+
+        /* Layer Content */
+        .layer-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .layer-items {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .security-badge {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            min-width: 160px;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        .badge-icon {
+            font-size: 1.2rem;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            background-color: #f3f4f6;
+        }
+
+        .badge-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .badge-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .badge-desc {
+            font-size: 0.6rem;
+            color: #6b7280;
+        }
+
+        /* Side Explanations */
+        .side-panel {
+            position: absolute;
+            width: 250px;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid;
+            z-index: 60; /* Increased z-index to be above layers */
+        }
+
+        .panel-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-text {
+            font-size: 0.75rem;
+            color: #4b5563;
+            line-height: 1.4;
+        }
+
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<div class="px-12 py-6 flex justify-between items-start border-b border-gray-100 bg-white z-40 relative">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<div class="w-10 h-10 bg-indigo-900 rounded-lg flex items-center justify-center text-white text-xl">
+<i class="fa-solid fa-user-shield"></i>
+</div>
+<h1 class="text-3xl font-bold text-gray-900 tracking-tight">Security Architecture: Zero-Trace</h1>
+</div>
+<p class="text-gray-500 text-sm ml-1">Defense-in-depth strategy ensuring data exists only during the print transaction lifecycle</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Slide 10</p>
+<p class="text-xs text-gray-300 mt-1">Security Model</p>
+</div>
+</div>
+<!-- Main Content -->
+<div class="shield-container bg-gray-50">
+<!-- Background decorative elements -->
+<div class="absolute w-full h-full opacity-5 pointer-events-none">
+<i class="fa-solid fa-shield-halved absolute text-[400px] left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+<!-- Layer 1: Interface / Client -->
+<div class="layer-1">
+<div class="layer-title">
+<i class="fa-solid fa-laptop-code"></i>
+<p>Layer 1: Interface Security</p>
+</div>
+<div class="layer-items">
+<div class="security-badge">
+<div class="badge-icon text-blue-600"><i class="fa-solid fa-file-contract"></i></div>
+<div class="badge-text">
+<p class="badge-title">Client-Side Encryption</p>
+<p class="badge-desc">AES-256 (Web Crypto API)</p>
+</div>
+</div>
+<div class="security-badge">
+<div class="badge-icon text-blue-600"><i class="fa-solid fa-qrcode"></i></div>
+<div class="badge-text">
+<p class="badge-title">Signed QR Codes</p>
+<p class="badge-desc">One-Time Use Tokens</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Layer 2: Network / Transport -->
+<div class="layer-2">
+<div class="layer-title">
+<i class="fa-solid fa-network-wired"></i>
+<p>Layer 2: Transport Security</p>
+</div>
+<div class="layer-items">
+<div class="security-badge">
+<div class="badge-icon text-indigo-600"><i class="fa-solid fa-lock"></i></div>
+<div class="badge-text">
+<p class="badge-title">TLS 1.3 Encryption</p>
+<p class="badge-desc">Data in Transit</p>
+</div>
+</div>
+<div class="security-badge">
+<div class="badge-icon text-indigo-600"><i class="fa-solid fa-globe"></i></div>
+<div class="badge-text">
+<p class="badge-title">Secure Headers</p>
+<p class="badge-desc">HSTS / CSP / CORS</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Layer 3: Access / Auth -->
+<div class="layer-3">
+<div class="layer-title">
+<i class="fa-solid fa-id-card-clip"></i>
+<p>Layer 3: Access Control</p>
+</div>
+<div class="layer-items">
+<div class="security-badge">
+<div class="badge-icon text-indigo-700"><i class="fa-brands fa-google"></i></div>
+<div class="badge-text">
+<p class="badge-title">Firebase Auth</p>
+<p class="badge-desc">Shopkeeper Identity</p>
+</div>
+</div>
+<div class="security-badge">
+<div class="badge-icon text-indigo-700"><i class="fa-solid fa-key"></i></div>
+<div class="badge-text">
+<p class="badge-title">Session Tokens</p>
+<p class="badge-desc">Short-Lived (10 mins)</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Layer 4: Data / Storage -->
+<div class="layer-4">
+<div class="layer-title">
+<i class="fa-solid fa-database"></i>
+<p>Layer 4: Data Volatility</p>
+</div>
+<div class="layer-items">
+<div class="security-badge">
+<div class="badge-icon text-purple-700"><i class="fa-solid fa-bolt"></i></div>
+<div class="badge-text">
+<p class="badge-title">Redis TTL</p>
+<p class="badge-desc">Auto-Expire (Volatile)</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Layer 5: Core / Purge -->
+<div class="layer-5">
+<div class="flex flex-col items-center justify-center text-white h-full pb-2">
+<div class="flex items-center gap-2 mb-1">
+<i class="fa-solid fa-fire text-yellow-300 text-lg"></i>
+<p class="text-xs font-bold uppercase tracking-wider">Core Protocol</p>
+</div>
+<p class="text-sm font-bold bg-indigo-900 bg-opacity-30 px-3 py-1 rounded-full border border-indigo-400 border-opacity-30">Secure Purge &amp; Wipe</p>
+</div>
+</div>
+<!-- Side Panel Left -->
+<div class="side-panel border-green-500" style="left: 40px; top: 180px;">
+<div class="panel-title text-green-700">
+<i class="fa-solid fa-check-circle"></i>
+<p>No Disk Writes</p>
+</div>
+<p class="panel-text">Files are streamed directly to RAM (Redis) and decrypted only in the Print Agent's volatile memory. No temp files are ever created on the HDD.</p>
+</div>
+<!-- Side Panel Right -->
+<div class="side-panel border-red-500" style="right: 40px; top: 180px;">
+<div class="panel-title text-red-600">
+<i class="fa-solid fa-user-secret"></i>
+<p>Anti-Residue</p>
+</div>
+<p class="panel-text">Unlike WhatsApp/Email, the "Sent" folder doesn't exist. Once the print command executes, the file binary is overwritten and the link expires.</p>
+</div>
+<!-- Compliance Badge -->
+<div class="absolute bottom-6 right-12 bg-gray-900 text-white px-4 py-2 rounded-lg flex items-center gap-3 shadow-lg z-50">
+<i class="fa-solid fa-scale-balanced text-yellow-400 text-xl"></i>
+<div>
+<p class="text-[10px] text-gray-400 uppercase">Compliant With</p>
+<p class="text-xs font-bold">DPDP Act 2023 (India)</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

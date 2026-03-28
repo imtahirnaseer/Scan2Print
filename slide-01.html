@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Scan2Print Ecosystem Overview</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;family=Roboto+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { margin: 0; padding: 0; background-color: #f3f4f6; }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        .component-box {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            z-index: 10;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .component-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+        .component-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .component-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1f2937;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .component-desc {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .connection-line {
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+        }
+        .flow-arrow {
+            fill: #9ca3af;
+        }
+        .badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-weight: 600;
+            margin-top: 8px;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        /* Specific Component Styles */
+        .user-app { border-top: 4px solid #3b82f6; top: 140px; left: 80px; }
+        .shop-app { border-top: 4px solid #8b5cf6; top: 140px; right: 80px; }
+        
+        .backend-core { border-top: 4px solid #10b981; top: 300px; left: 50%; transform: translateX(-50%); width: 280px; height: 140px; }
+        
+        .db-redis { border-top: 4px solid #ef4444; top: 160px; left: 50%; transform: translateX(-50%); width: 180px; }
+        .db-firestore { border-top: 4px solid #f59e0b; top: 480px; left: 50%; transform: translateX(-50%); width: 180px; }
+        
+        .print-agent { border-top: 4px solid #6366f1; top: 520px; right: 150px; }
+        .printer { border-top: 4px solid #1f2937; top: 520px; left: 150px; width: 180px; }
+
+        .dashed-zone {
+            position: absolute;
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            background-color: rgba(248, 250, 252, 0.5);
+            z-index: 0;
+        }
+        
+        .label-pill {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid #e5e7eb;
+            position: absolute;
+            z-index: 5;
+        }
+
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<div class="px-12 py-8 flex justify-between items-start border-b border-gray-100 bg-white z-20">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xl">
+<i class="fa-solid fa-print"></i>
+</div>
+<h1 class="text-3xl font-bold text-gray-900 tracking-tight">Scan2Print Ecosystem</h1>
+</div>
+<p class="text-gray-500 text-lg ml-1">Comprehensive System Architecture &amp; Data Flow</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Slide 01</p>
+<p class="text-xs text-gray-300 mt-1">Introduction</p>
+</div>
+</div>
+<!-- Main Diagram Area -->
+<div class="flex-1 relative bg-gray-50/50 w-full h-full">
+<!-- Zones -->
+<div class="dashed-zone" style="top: 100px; left: 40px; width: 300px; height: 180px;">
+<p class="absolute -top-3 left-4 bg-gray-50 px-2 text-xs font-bold text-gray-400">CLIENT LAYER</p>
+</div>
+<div class="dashed-zone" style="top: 100px; right: 40px; width: 300px; height: 180px;">
+<p class="absolute -top-3 left-4 bg-gray-50 px-2 text-xs font-bold text-gray-400">MANAGEMENT LAYER</p>
+</div>
+<div class="dashed-zone" style="top: 120px; left: 380px; width: 520px; height: 480px; border-color: #10b981;">
+<p class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white px-2 text-xs font-bold text-green-600">SECURE CLOUD INFRASTRUCTURE</p>
+</div>
+<div class="dashed-zone" style="bottom: 40px; left: 40px; right: 40px; height: 160px; border-color: #6366f1;">
+<p class="absolute -top-3 left-4 bg-gray-50 px-2 text-xs font-bold text-indigo-600">SHOP PREMISE (EXECUTION)</p>
+</div>
+<!-- SVG Connections -->
+<svg class="absolute top-0 left-0 w-full h-full z-0" style="pointer-events: none;">
+<defs>
+<marker id="arrowhead" markerheight="7" markerwidth="10" orient="auto" refx="9" refy="3.5">
+<polygon fill="#9ca3af" points="0 0, 10 3.5, 0 7"></polygon>
+</marker>
+<marker id="arrowhead-blue" markerheight="7" markerwidth="10" orient="auto" refx="9" refy="3.5">
+<polygon fill="#3b82f6" points="0 0, 10 3.5, 0 7"></polygon>
+</marker>
+</defs>
+<!-- User to Backend -->
+<path d="M 190 230 C 190 370, 400 370, 500 370" marker-end="url(#arrowhead-blue)" stroke="#3b82f6" stroke-dasharray="5,5" stroke-width="2"></path>
+<!-- Shop App to Backend -->
+<path d="M 1090 230 C 1090 370, 880 370, 780 370" marker-end="url(#arrowhead)" stroke="#8b5cf6" stroke-width="2"></path>
+<!-- Backend to Redis -->
+<path d="M 640 300 L 640 250" marker-end="url(#arrowhead)" stroke="#ef4444" stroke-width="2"></path>
+<!-- Backend to Firestore -->
+<path d="M 640 440 L 640 480" marker-end="url(#arrowhead)" stroke="#f59e0b" stroke-width="2"></path>
+<!-- Backend to Print Agent -->
+<path d="M 700 440 C 750 480, 850 480, 910 520" marker-end="url(#arrowhead)" stroke="#6366f1" stroke-width="2"></path>
+<!-- Print Agent to Printer -->
+<path d="M 910 600 L 330 600" marker-end="url(#arrowhead)" stroke="#1f2937" stroke-width="3"></path>
+</svg>
+<!-- Labels on Lines -->
+<div class="label-pill text-blue-600 border-blue-200" style="top: 280px; left: 240px;">HTTPS / Upload</div>
+<div class="label-pill text-purple-600 border-purple-200" style="top: 280px; right: 240px;">HTTPS / REST</div>
+<div class="label-pill" style="top: 265px; left: 580px;">Volatile (TTL)</div>
+<div class="label-pill" style="top: 450px; left: 585px;">Async Log</div>
+<div class="label-pill text-indigo-600 border-indigo-200" style="top: 470px; right: 380px;">WebSocket (Socket.io)</div>
+<div class="label-pill bg-gray-800 text-white border-gray-900" style="bottom: 90px; left: 580px;">USB / Network (RAW)</div>
+<!-- Components -->
+<!-- User PWA -->
+<div class="component-box user-app">
+<i class="fa-solid fa-mobile-screen component-icon text-blue-500"></i>
+<div class="component-title">User Web App</div>
+<div class="component-desc">No Install PWA<br/>React / Next.js</div>
+<div class="badge bg-blue-100 text-blue-800">SCAN &amp; UPLOAD</div>
+</div>
+<!-- Shop App -->
+<div class="component-box shop-app">
+<i class="fa-solid fa-store component-icon text-purple-500"></i>
+<div class="component-title">Shopkeeper App</div>
+<div class="component-desc">Flutter / React Native<br/>Management Interface</div>
+<div class="badge bg-purple-100 text-purple-800">GENERATE QR</div>
+</div>
+<!-- Redis -->
+<div class="component-box db-redis">
+<i class="fa-solid fa-database component-icon text-red-500"></i>
+<div class="component-title">Redis Cache</div>
+<div class="component-desc">Temporary File Storage<br/>Zero-Trace Deletion</div>
+</div>
+<!-- Backend Core -->
+<div class="component-box backend-core">
+<i class="fa-solid fa-server component-icon text-green-500"></i>
+<div class="component-title">Central Backend API</div>
+<div class="component-desc">Node.js (Express) • Socket.io<br/>Orchestration Layer</div>
+<div class="flex gap-2 mt-2">
+<span class="badge bg-green-100 text-green-800">AUTH</span>
+<span class="badge bg-green-100 text-green-800">ENCRYPTION</span>
+<span class="badge bg-green-100 text-green-800">PAYMENTS</span>
+</div>
+</div>
+<!-- Firestore -->
+<div class="component-box db-firestore">
+<i class="fa-brands fa-google component-icon text-yellow-500"></i>
+<div class="component-title">Firestore</div>
+<div class="component-desc">User Profiles • History<br/>Analytics Data</div>
+</div>
+<!-- Print Agent -->
+<div class="component-box print-agent">
+<i class="fa-solid fa-desktop component-icon text-indigo-500"></i>
+<div class="component-title">Print Agent Service</div>
+<div class="component-desc">Python / Node.js<br/>Background Service</div>
+<div class="badge bg-indigo-100 text-indigo-800">SILENT PRINT</div>
+</div>
+<!-- Printer -->
+<div class="component-box printer">
+<i class="fa-solid fa-print component-icon text-gray-800"></i>
+<div class="component-title">Physical Printer</div>
+<div class="component-desc">Laser / Inkjet<br/>Local Hardware</div>
+<div class="badge bg-gray-200 text-gray-800">OUTPUT</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="px-12 py-4 bg-white border-t border-gray-100 flex justify-between items-center text-xs text-gray-400">
+<p>Scan2Print Architecture v1.0</p>
+<div class="flex gap-4">
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Client Side</div>
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> Server Side</div>
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> On-Premise</div>
+</div>
+</div>
+</div>
+</body>
+</html>

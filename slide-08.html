@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shopkeeper Workflow: Operational Control</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;family=Roboto+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', sans-serif; }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Lane Styling */
+        .lane-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .lane {
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding-left: 200px; /* Space for label */
+            padding-right: 40px;
+        }
+
+        .lane:last-child {
+            border-bottom: none;
+        }
+
+        .lane-label {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            z-index: 20;
+        }
+
+        .lane-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .lane-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Process Nodes */
+        .process-node {
+            width: 160px;
+            height: 100px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 30;
+            padding: 12px;
+            transition: transform 0.2s;
+        }
+
+        .node-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .node-text {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.2;
+            color: #1f2937;
+        }
+
+        .node-subtext {
+            font-size: 0.65rem;
+            color: #6b7280;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        /* Specific Lane Styles */
+        .lane-shopkeeper { background-color: rgba(139, 92, 246, 0.02); } /* Purple tint */
+        .lane-system { background-color: rgba(59, 130, 246, 0.02); } /* Blue tint */
+        .lane-pc { background-color: rgba(16, 185, 129, 0.02); } /* Green tint */
+
+        .label-shopkeeper .lane-icon { background-color: #8b5cf6; }
+        .label-system .lane-icon { background-color: #3b82f6; }
+        .label-pc .lane-icon { background-color: #10b981; }
+
+        .node-shopkeeper { border-color: #c4b5fd; background: #f5f3ff; }
+        .node-shopkeeper .node-icon { color: #7c3aed; }
+        
+        .node-system { border-color: #93c5fd; background: #eff6ff; }
+        .node-system .node-icon { color: #2563eb; }
+        
+        .node-pc { border-color: #6ee7b7; background: #ecfdf5; }
+        .node-pc .node-icon { color: #059669; }
+
+        /* Connectors SVG */
+        .connector-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .connector-line {
+            stroke: #9ca3af;
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 4;
+            animation: dash 30s linear infinite;
+        }
+
+        .connector-solid {
+            stroke: #6b7280;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: -1000; }
+        }
+
+        /* Floating Badge */
+        .status-badge {
+            position: absolute;
+            top: -12px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .revenue-badge {
+            position: absolute;
+            top: -12px;
+            right: -8px;
+            background: #10b981;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<div class="px-12 py-6 flex justify-between items-start border-b border-gray-100 bg-white z-40 shadow-sm">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center text-white text-xl">
+<i class="fa-solid fa-store"></i>
+</div>
+<h1 class="text-3xl font-bold text-gray-900 tracking-tight">Shopkeeper Workflow: Operational Control</h1>
+</div>
+<p class="text-gray-500 text-sm ml-1">Managing the "Phygital" Handshake and Business Logic via Mobile App</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Slide 08</p>
+<p class="text-xs text-gray-300 mt-1">Workflow Diagram</p>
+</div>
+</div>
+<!-- Swimlane Container -->
+<div class="lane-container">
+<!-- SVG Layer for Connectors -->
+<svg class="connector-svg">
+<defs>
+<marker id="arrow" markerheight="10" markerunits="strokeWidth" markerwidth="10" orient="auto" refx="9" refy="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#6b7280"></path>
+</marker>
+<marker id="arrow-dashed" markerheight="10" markerunits="strokeWidth" markerwidth="10" orient="auto" refx="9" refy="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#9ca3af"></path>
+</marker>
+</defs>
+<!-- Flow Paths -->
+<!-- 1. Generate QR -> Create Session -->
+<path class="connector-solid" d="M 300 140 L 300 250" marker-end="url(#arrow)"></path>
+<!-- 2. Create Session -> Job Received (Dashed for user interaction gap) -->
+<path class="connector-line" d="M 380 300 L 440 300" marker-end="url(#arrow-dashed)"></path>
+<!-- 3. Job Received -> Monitor Queue -->
+<path class="connector-solid" d="M 520 250 L 520 140" marker-end="url(#arrow)"></path>
+<!-- 4. Monitor Queue -> Collect Cash -->
+<path class="connector-solid" d="M 600 90 L 660 90" marker-end="url(#arrow)"></path>
+<!-- 5. Collect Cash -> Validate & Dispatch -->
+<path class="connector-solid" d="M 740 140 L 740 250" marker-end="url(#arrow)"></path>
+<!-- 6. Validate & Dispatch -> Print Agent -->
+<path class="connector-solid" d="M 740 350 L 740 450" marker-end="url(#arrow)"></path>
+<!-- 7. Print Agent -> Log Transaction -->
+<path class="connector-solid" d="M 820 500 L 920 500 L 920 350" marker-end="url(#arrow)"></path>
+<!-- 8. Log Transaction -> Dashboard -->
+<path class="connector-solid" d="M 1000 300 L 1060 300 L 1060 140" marker-end="url(#arrow)"></path>
+<!-- Feedback Loop dashed -->
+<path class="connector-line" d="M 600 450 L 580 400" stroke-opacity="0.3"></path>
+</svg>
+<!-- Lane 1: Shopkeeper App -->
+<div class="lane lane-shopkeeper">
+<div class="lane-label label-shopkeeper">
+<div class="lane-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+<p class="lane-title">Shopkeeper</p>
+<p class="text-xs text-gray-400 mt-1">Mobile App</p>
+</div>
+<!-- Node 1: Generate QR -->
+<div class="process-node node-shopkeeper" style="left: 220px;">
+<i class="fa-solid fa-qrcode node-icon"></i>
+<p class="node-text">Generate QR</p>
+<p class="node-subtext">Start New Job</p>
+</div>
+<!-- Node 3: Monitor Queue -->
+<div class="process-node node-shopkeeper" style="left: 440px;">
+<div class="status-badge">Alert</div>
+<i class="fa-solid fa-bell node-icon"></i>
+<p class="node-text">Job Alert</p>
+<p class="node-subtext">Review Pages/Cost</p>
+</div>
+<!-- Node 4: Approve Cash -->
+<div class="process-node node-shopkeeper" style="left: 660px;">
+<i class="fa-solid fa-hand-holding-dollar node-icon"></i>
+<p class="node-text">Collect Cash</p>
+<p class="node-subtext">Approve Offline Pay</p>
+</div>
+<!-- Node 8: Dashboard -->
+<div class="process-node node-shopkeeper" style="left: 1000px;">
+<div class="revenue-badge">+ ₹10</div>
+<i class="fa-solid fa-chart-line node-icon"></i>
+<p class="node-text">Analytics</p>
+<p class="node-subtext">Daily Revenue/Stats</p>
+</div>
+</div>
+<!-- Lane 2: System Backend -->
+<div class="lane lane-system">
+<div class="lane-label label-system">
+<div class="lane-icon"><i class="fa-solid fa-cloud"></i></div>
+<p class="lane-title">Cloud System</p>
+<p class="text-xs text-gray-400 mt-1">Backend Logic</p>
+</div>
+<!-- Node 2: Create Session -->
+<div class="process-node node-system" style="left: 220px;">
+<i class="fa-solid fa-key node-icon"></i>
+<p class="node-text">Create Session</p>
+<p class="node-subtext">Active Token</p>
+</div>
+<!-- Node 3b: Job Received -->
+<div class="process-node node-system" style="left: 440px; border-style: dashed;">
+<i class="fa-solid fa-file-arrow-up node-icon"></i>
+<p class="node-text">File Received</p>
+<p class="node-subtext">Validation Engine</p>
+</div>
+<!-- Node 5: Dispatch -->
+<div class="process-node node-system" style="left: 660px;">
+<i class="fa-solid fa-satellite-dish node-icon"></i>
+<p class="node-text">Dispatch Job</p>
+<p class="node-subtext">Unlock Print Queue</p>
+</div>
+<!-- Node 7: Log -->
+<div class="process-node node-system" style="left: 880px;">
+<i class="fa-solid fa-database node-icon"></i>
+<p class="node-text">Update Ledger</p>
+<p class="node-subtext">Sync Firestore</p>
+</div>
+</div>
+<!-- Lane 3: Shop PC -->
+<div class="lane lane-pc">
+<div class="lane-label label-pc">
+<div class="lane-icon"><i class="fa-solid fa-desktop"></i></div>
+<p class="lane-title">Shop PC</p>
+<p class="text-xs text-gray-400 mt-1">Print Agent</p>
+</div>
+<!-- Node 6: Print Agent -->
+<div class="process-node node-pc" style="left: 660px;">
+<i class="fa-solid fa-print node-icon"></i>
+<p class="node-text">Silent Print</p>
+<p class="node-subtext">Auto-Execution</p>
+</div>
+<!-- Node 6b: Purge -->
+<div class="process-node node-pc" style="left: 880px;">
+<i class="fa-solid fa-eraser node-icon"></i>
+<p class="node-text">Secure Wipe</p>
+<p class="node-subtext">Delete from Local</p>
+</div>
+</div>
+<!-- Legend -->
+<div class="absolute bottom-5 right-5 flex gap-4">
+<div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-200">
+<div class="w-3 h-3 rounded-full bg-purple-500"></div>
+<span class="text-xs font-semibold text-gray-600">Manual Action</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-200">
+<div class="w-3 h-3 rounded-full bg-blue-500"></div>
+<span class="text-xs font-semibold text-gray-600">Automated Logic</span>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
